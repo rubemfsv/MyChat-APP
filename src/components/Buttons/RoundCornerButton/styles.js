@@ -1,15 +1,15 @@
 import {StyleSheet} from 'react-native';
-import {appStyle} from '../../../utils/styleHelper';
+import {color} from '../../../utils';
 
 export default StyleSheet.create({
   btn: {
-    backgroundColor: appStyle.fieldBgColor,
+    backgroundColor: color.DARK_GRAY,
     width: '90%',
-    height: appStyle.btnHeight,
-    borderRadius: appStyle.btnBorderRadius,
+    height: 50,
+    borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    marginVertical: appStyle.btnMarginVertical,
+    marginVertical: 10,
   },
-  text: {fontSize: 26, fontWeight: 'bold', color: appStyle.fieldTextColor},
+  text: {fontSize: 26, fontWeight: 'bold', color: color.WHITE},
 });

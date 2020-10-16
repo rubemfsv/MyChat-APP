@@ -1,32 +1,15 @@
-import React from 'react';
-import {TextInput, Text} from 'react-native';
-import styles from './styles';
-import {color} from '../../utils';
+import {StyleSheet} from 'react-native';
+import {color} from '../../utils/';
 
-export default ({
-  placeholder,
-  inputStyle,
-  placeholderTextColor,
-  secureTextEntry,
-  onChangeText,
-  value,
-  onSubmitEditing,
-  onBlur,
-  onFocus,
-  numberOfLines,
-}) => (
-  <TextInput
-    style={[styles.input, inputStyle]}
-    value={value}
-    numberOfLines={numberOfLines}
-    onChangeText={onChangeText}
-    secureTextEntry={secureTextEntry}
-    placeholder={placeholder}
-    placeholderTextColor={
-      placeholderTextColor ? placeholderTextColor : color.WHITE
-    }
-    onSubmitEditing={onSubmitEditing}
-    onBlur={onBlur}
-    onFocus={onFocus}
-  />
-);
+export default StyleSheet.create({
+  input: {
+    paddingLeft: 16,
+    backgroundColor: color.DARK_GRAY,
+    width: '90%',
+    color: color.WHITE,
+    height: 50,
+    alignSelf: 'center',
+    marginVertical: 20,
+    fontSize: 16,
+  },
+});
