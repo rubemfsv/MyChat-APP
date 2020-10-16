@@ -7,7 +7,9 @@ import RoundCornerButton from '../../components/Buttons/RoundCornerButton';
 import {Store} from '../../contexts/store';
 import {LOADING_START, LOADING_STOP} from '../../contexts/actions/type';
 
-// import { Container } from './styles';
+import SignInRequest from '../../network/signIn';
+import {setAsyncStorage, keys} from '../../asyncStorage';
+import {setUniqueValue} from '../../utils/constants';
 
 const SignIn = ({navigation}) => {
   const globalState = useContext(Store);
@@ -38,11 +40,21 @@ const SignIn = ({navigation}) => {
       dispatchLoaderAction({
         type: LOADING_START,
       });
-      setTimeout(() => {
-        dispatchLoaderAction({
-          type: LOADING_STOP,
+      SignInRequest(email, password)
+        .then((res) => {
+          setAsyncStorage(keys.uuid, res.user.uid);
+          setUniqueValue(res.user.uid);
+          dispatchLoaderAction({
+            type: LOADING_STOP,
+          });
+          navigation.replace('Dashboard');
+        })
+        .catch((err) => {
+          dispatchLoaderAction({
+            type: LOADING_STOP,
+          });
+          alert(err);
         });
-      }, 2000);
     }
   }, [email, password, dispatchLoaderAction]);
 

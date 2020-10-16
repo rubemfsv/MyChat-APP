@@ -9,7 +9,7 @@ export default StyleSheet.create({
     color: color.WHITE,
     height: 50,
     alignSelf: 'center',
-    marginVertical: 20,
+    marginVertical: 10,
     fontSize: 16,
   },
 });
