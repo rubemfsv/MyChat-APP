@@ -1,13 +1,18 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useContext, useState} from 'react';
 import {SafeAreaView, View, Text, Alert} from 'react-native';
 import globalStyle from '../../utils/styleHelper/globalStyle';
 import {color} from '../../utils';
 import Input from '../../components/Input';
 import RoundCornerButton from '../../components/Buttons/RoundCornerButton';
+import {Store} from '../../contexts/store';
+import {LOADING_START, LOADING_STOP} from '../../contexts/actions/type';
 
 // import { Container } from './styles';
 
 const SignIn = ({navigation}) => {
+  const globalState = useContext(Store);
+  const {dispatchLoaderAction} = globalState;
+
   const [credentials, setCredentials] = useState({
     email: '',
     password: '',
@@ -30,9 +35,16 @@ const SignIn = ({navigation}) => {
     } else if (!password) {
       Alert.alert('Password is required!');
     } else {
-      Alert.alert(JSON.stringify(credentials));
+      dispatchLoaderAction({
+        type: LOADING_START,
+      });
+      setTimeout(() => {
+        dispatchLoaderAction({
+          type: LOADING_STOP,
+        });
+      }, 2000);
     }
-  }, [credentials, email, password]);
+  }, [email, password, dispatchLoaderAction]);
 
   return (
     <SafeAreaView style={[globalStyle.flex1, {backgroundColor: color.BLACK}]}>
