@@ -6,7 +6,7 @@ import styles from './styles';
 import {color} from '../../utils';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 
-const ChatBox = ({userId, msg, img, onImgTap}) => {
+const ChatBox = ({userId, mssage, img, onImgTap}) => {
   let isCurrentUser = userId === uuid ? true : false;
 
   const {height: deviceHeight, width: deviceWidth} = Dimensions.get('window');
@@ -39,7 +39,7 @@ const ChatBox = ({userId, msg, img, onImgTap}) => {
           </CardItem>
         ) : (
           <Text style={[styles.chatTxt, isCurrentUser && {color: color.WHITE}]}>
-            {msg}
+            {mssage}
           </Text>
         )}
       </View>

@@ -2,7 +2,7 @@ import SignInRequest from './signIn';
 import SignUpRequest from './signUp';
 import {AddUser, UpdateUser} from './user';
 import LogOutUser from './logout';
-import {senderMsg, recieverMsg} from './messages';
+import {senderMessage, receiverMessage} from './messages';
 
 export {
   SignInRequest,
@@ -10,6 +10,6 @@ export {
   AddUser,
   LogOutUser,
   UpdateUser,
-  senderMsg,
-  recieverMsg,
+  senderMessage,
+  receiverMessage,
 };

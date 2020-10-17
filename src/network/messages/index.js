@@ -1,16 +1,21 @@
 import firebase from '../../firebase/config';
 
-export const senderMsg = async (msgValue, currentUserId, guestUserId, img) => {
+export const senderMessage = async (
+  messageValue,
+  currentUserId,
+  guestUserId,
+  img,
+) => {
   try {
     return await firebase
       .database()
-      .ref('messeges/' + currentUserId)
+      .ref('messages/' + currentUserId)
       .child(guestUserId)
       .push({
-        messege: {
+        message: {
           sender: currentUserId,
-          reciever: guestUserId,
-          msg: msgValue,
+          receiver: guestUserId,
+          msg: messageValue,
           img: img,
         },
       });
@@ -19,8 +24,8 @@ export const senderMsg = async (msgValue, currentUserId, guestUserId, img) => {
   }
 };
 
-export const recieverMsg = async (
-  msgValue,
+export const receiverMessage = async (
+  messageValue,
   currentUserId,
   guestUserId,
   img,
@@ -28,13 +33,13 @@ export const recieverMsg = async (
   try {
     return await firebase
       .database()
-      .ref('messeges/' + guestUserId)
+      .ref('messages/' + guestUserId)
       .child(currentUserId)
       .push({
-        messege: {
+        message: {
           sender: currentUserId,
-          reciever: guestUserId,
-          msg: msgValue,
+          receiver: guestUserId,
+          msg: messageValue,
           img: img,
         },
       });
