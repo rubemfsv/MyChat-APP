@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-import {SignIn, SignUp, Dashboard} from '../screens';
+import {SignIn, SignUp, Dashboard, Splash, Chat} from '../screens';
 import {color} from '../utils';
 
 const Stack = createStackNavigator();
@@ -10,7 +10,7 @@ function NavContainer() {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="SignIn"
+        initialRouteName="Splash"
         screenOptions={{
           headerShown: true,
           headerStyle: {backgroundColor: color.DARK_GRAY},
@@ -21,6 +21,11 @@ function NavContainer() {
             fontSize: 20,
           },
         }}>
+        <Stack.Screen
+          name="Splash"
+          component={Splash}
+          options={{headerShown: false}}
+        />
         <Stack.Screen
           name="SignIn"
           component={SignIn}
@@ -36,6 +41,7 @@ function NavContainer() {
           component={Dashboard}
           options={{headerLeft: null}}
         />
+        <Stack.Screen name="Chat" component={Chat} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -4,17 +4,12 @@ import globalStyle from '../../utils/styleHelper/globalStyle';
 import {color} from '../../utils';
 import Input from '../../components/Input';
 import RoundCornerButton from '../../components/Buttons/RoundCornerButton';
-import {Store} from '../../contexts/store';
-import {LOADING_START, LOADING_STOP} from '../../contexts/actions/type';
 
 import SignInRequest from '../../network/signIn';
 import {setAsyncStorage, keys} from '../../asyncStorage';
 import {setUniqueValue} from '../../utils/constants';
 
 const SignIn = ({navigation}) => {
-  const globalState = useContext(Store);
-  const {dispatchLoaderAction} = globalState;
-
   const [credentials, setCredentials] = useState({
     email: '',
     password: '',
@@ -37,26 +32,22 @@ const SignIn = ({navigation}) => {
     } else if (!password) {
       Alert.alert('Password is required!');
     } else {
-      dispatchLoaderAction({
-        type: LOADING_START,
-      });
       SignInRequest(email, password)
         .then((res) => {
+          if (!res.additionalUserInfo) {
+            alert(res);
+            return;
+          }
           setAsyncStorage(keys.uuid, res.user.uid);
           setUniqueValue(res.user.uid);
-          dispatchLoaderAction({
-            type: LOADING_STOP,
-          });
+
           navigation.replace('Dashboard');
         })
         .catch((err) => {
-          dispatchLoaderAction({
-            type: LOADING_STOP,
-          });
           alert(err);
         });
     }
-  }, [email, password, dispatchLoaderAction]);
+  }, [email, password, navigation]);
 
   return (
     <SafeAreaView style={[globalStyle.flex1, {backgroundColor: color.BLACK}]}>

@@ -1,8 +1,8 @@
 import SignInRequest from './signIn';
-import SignUpRequest from './signup';
+import SignUpRequest from './signUp';
 import {AddUser, UpdateUser} from './user';
 import LogOutUser from './logout';
-import {senderMsg, recieverMsg} from './messeges';
+import {senderMsg, recieverMsg} from './messages';
 
 export {
   SignInRequest,

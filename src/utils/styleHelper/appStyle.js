@@ -6,7 +6,7 @@ export const {height: deviceHeight, width: deviceWidth} = Dimensions.get(
   'window',
 );
 
-const getFieldDimesions = () => {
+export const getFieldDimesions = () => {
   if (deviceHeight > smallDeviceHeight) {
     return {
       fieldHeight: 50,
