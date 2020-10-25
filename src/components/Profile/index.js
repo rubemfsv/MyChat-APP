@@ -1,36 +1,40 @@
 import React from 'react';
-import {Image, View, Text} from 'react-native';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import styles from './styles';
-import {globalStyle, color} from '../../utils';
+import {color} from '../../utils';
 import {TouchableOpacity} from 'react-native-gesture-handler';
+import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
+
+import {
+  Container,
+  ImageContainer,
+  Image,
+  NoImage,
+  TextNoImage,
+  EditContainer,
+  WelcomeText,
+} from './styles';
 
 export default ({img, name, onImgTap, onEditImgTap}) => (
-  <View style={[globalStyle.sectionCentered, styles.container]}>
-    <View style={styles.imgContainer}>
+  <Container>
+    <ImageContainer>
       <TouchableOpacity onPress={onImgTap} activeOpacity={0.8}>
         {img ? (
-          <Image source={{uri: img}} style={styles.img} resizeMode="cover" />
+          <Image source={{uri: img}} resizeMode="cover" />
         ) : (
-          <View
-            style={[
-              globalStyle.sectionCentered,
-              styles.img,
-              {backgroundColor: color.DARK_GRAY},
-            ]}>
-            <Text style={styles.name}>{name.charAt(0)}</Text>
-          </View>
+          <NoImage>
+            <TextNoImage>{name.charAt(0)}</TextNoImage>
+          </NoImage>
         )}
       </TouchableOpacity>
-      <View style={[globalStyle.sectionCentered, styles.editImgContainer]}>
-        <FontAwesome5
-          name="user-edit"
+      <EditContainer>
+        <SimpleLineIcons
+          name="wrench"
           size={20}
+          style={{alignSelf: 'center', marginTop: 10}}
           onPress={onEditImgTap}
           color={color.WHITE}
         />
-      </View>
-    </View>
-    <Text style={styles.welcome}>{name}</Text>
-  </View>
+      </EditContainer>
+    </ImageContainer>
+    <WelcomeText>{name}</WelcomeText>
+  </Container>
 );

@@ -1,12 +1,12 @@
-import {Dimensions} from 'react-native';
-import * as color from '../colors';
-import {smallDeviceHeight} from '../constants';
+import { Dimensions } from "react-native";
+import * as color from "../colors";
+import { smallDeviceHeight } from "../constants";
 
-export const {height: deviceHeight, width: deviceWidth} = Dimensions.get(
-  'window',
+export const { height: deviceHeight, width: deviceWidth } = Dimensions.get(
+  "window"
 );
 
-export const getFieldDimesions = () => {
+const getFieldDimesions = () => {
   if (deviceHeight > smallDeviceHeight) {
     return {
       fieldHeight: 50,

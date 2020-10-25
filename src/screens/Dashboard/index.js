@@ -5,26 +5,45 @@ import React, {
   useLayoutEffect,
   useCallback,
 } from 'react';
-import {SafeAreaView, Alert, Text, View, FlatList} from 'react-native';
+import {Alert, FlatList} from 'react-native';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import ImagePicker from 'react-native-image-picker';
-import Profile from '../../components/Profile';
-import ShowUsers from '../../components/ShowUsers';
+import {Profile, ShowUsers, StickyHeader} from '../../components';
 import firebase from '../../firebase/config';
-import {color, globalStyle} from '../../utils';
+import {color} from '../../utils';
+import {Store} from '../../contexts/store';
+import {LOADING_STOP, LOADING_START} from '../../contexts/actions/type';
 import {uuid, smallDeviceHeight} from '../../utils/constants';
 import {clearAsyncStorage} from '../../asyncStorage';
+import {deviceHeight} from '../../utils/styleHelper/appStyle';
 import {UpdateUser, LogOutUser} from '../../network';
 
-const Dashboard = ({navigation}) => {
+import {Container, ListHeaderContainer} from './styles';
+
+export default ({navigation}) => {
+  const globalState = useContext(Store);
+  const {dispatchLoaderAction} = globalState;
+
   const [userDetail, setUserDetail] = useState({
     id: '',
     name: '',
     profileImg: '',
   });
-
-  const {name, profileImg} = userDetail;
+  const [getScrollPosition, setScrollPosition] = useState(0);
   const [allUsers, setAllUsers] = useState([]);
+  const {profileImg, name} = userDetail;
+
+  const logout = useCallback(() => {
+    LogOutUser()
+      .then(() => {
+        clearAsyncStorage()
+          .then(() => {
+            navigation.replace('SignIn');
+          })
+          .catch((err) => console.log(err));
+      })
+      .catch((err) => alert(err));
+  }, [navigation]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -37,39 +56,40 @@ const Dashboard = ({navigation}) => {
           onPress={() =>
             Alert.alert(
               'Logout',
-              'Are you sure to log out?',
+              'Are you sure to log out',
               [
                 {
                   text: 'Yes',
-                  onPress: () => LogOut(),
+                  onPress: () => logout(),
                 },
                 {
                   text: 'No',
                 },
               ],
-              {
-                cancelable: false,
-              },
+              {cancelable: false},
             )
           }
         />
       ),
     });
-  }, [navigation, LogOut]);
+  }, [navigation, logout]);
 
   useEffect(() => {
+    dispatchLoaderAction({
+      type: LOADING_START,
+    });
     try {
       firebase
         .database()
         .ref('users')
-        .on('value', (dataSnapShot) => {
+        .on('value', (dataSnapshot) => {
           let users = [];
           let currentUser = {
             id: '',
             name: '',
             profileImg: '',
           };
-          dataSnapShot.forEach((child) => {
+          dataSnapshot.forEach((child) => {
             if (uuid === child.val().uuid) {
               currentUser.id = uuid;
               currentUser.name = child.val().name;
@@ -84,59 +104,144 @@ const Dashboard = ({navigation}) => {
           });
           setUserDetail(currentUser);
           setAllUsers(users);
+          dispatchLoaderAction({
+            type: LOADING_STOP,
+          });
         });
     } catch (error) {
       alert(error);
+      dispatchLoaderAction({
+        type: LOADING_STOP,
+      });
     }
-  }, []);
+  }, [dispatchLoaderAction]);
 
-  const LogOut = useCallback(() => {
-    LogOutUser()
-      .then(() => {
-        clearAsyncStorage()
+  const onSelectPhoto = useCallback(() => {
+    const options = {
+      storageOptions: {
+        skipBackup: true,
+      },
+    };
+
+    ImagePicker.showImagePicker(options, (response) => {
+      console.log('Response = ', response);
+
+      if (response.didCancel) {
+        console.log('User cancelled photo picker');
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      } else if (response.customButton) {
+        console.log('User tapped custom button: ', response.customButton);
+      } else {
+        let source = 'data:image/jpeg;base64,' + response.data;
+        dispatchLoaderAction({
+          type: LOADING_START,
+        });
+        UpdateUser(uuid, source)
           .then(() => {
-            navigation.replace('SignIn');
+            setUserDetail({
+              ...userDetail,
+              profileImg: source,
+            });
+            dispatchLoaderAction({
+              type: LOADING_STOP,
+            });
           })
-          .catch((err) => alert(err));
-      })
-      .catch((err) => alert(err));
-  }, []);
+          .catch(() => {
+            alert(err);
+            dispatchLoaderAction({
+              type: LOADING_STOP,
+            });
+          });
+      }
+    });
+  }, [dispatchLoaderAction, userDetail]);
 
-  const nameTap = useCallback((profileImg, name, guestUserId) => {
-    if (!profileImg) {
-      navigation.navigate('Chat', {
-        name,
-        imgText: name.charAt(0),
-        guestUserId,
-        currentUserId: uuid,
-      });
+  const onImageTap = useCallback(
+    (profileImg, name) => {
+      if (!profileImg) {
+        navigation.navigate('ShowFullImg', {
+          name,
+          imgText: name.charAt(0),
+        });
+      } else {
+        navigation.navigate('ShowFullImg', {name, img: profileImg});
+      }
+    },
+    [navigation],
+  );
+
+  const onNameTap = useCallback(
+    (profileImg, name, guestUserId) => {
+      if (!profileImg) {
+        navigation.navigate('Chat', {
+          name,
+          imgText: name.charAt(0),
+          guestUserId,
+          currentUserId: uuid,
+        });
+      } else {
+        navigation.navigate('Chat', {
+          name,
+          img: profileImg,
+          guestUserId,
+          currentUserId: uuid,
+        });
+      }
+    },
+    [navigation],
+  );
+
+  const getOpacity = useCallback(() => {
+    if (deviceHeight < smallDeviceHeight) {
+      return deviceHeight / 4;
     } else {
-      navigation.navigate('Chat', {
-        name,
-        img: profileImg,
-        guestUserId,
-        currentUserId: uuid,
-      });
+      return deviceHeight / 6;
     }
   }, []);
 
   return (
-    <SafeAreaView style={[globalStyle.flex1, {backgroundColor: color.BLACK}]}>
+    <Container>
+      {getScrollPosition > getOpacity() && (
+        <StickyHeader
+          name={name}
+          img={profileImg}
+          onImgTap={() => onImageTap(profileImg, name)}
+        />
+      )}
+
       <FlatList
         alwaysBounceVertical={false}
         data={allUsers}
         keyExtractor={(_, index) => index.toString()}
-        ListHeaderComponent={<Profile img={profileImg} name={name} />}
+        onScroll={(event) =>
+          setScrollPosition(event.nativeEvent.contentOffset.y)
+        }
+        ListHeaderComponent={
+          <ListHeaderContainer
+            style={{
+              opacity:
+                getScrollPosition < getOpacity()
+                  ? (getOpacity() - getScrollPosition) / 100
+                  : 0,
+            }}>
+            <Profile
+              img={profileImg}
+              onImgTap={() => onImageTap(profileImg, name)}
+              onEditImgTap={() => onSelectPhoto()}
+              name={name}
+            />
+          </ListHeaderContainer>
+        }
         renderItem={({item}) => (
           <ShowUsers
             name={item.name}
             img={item.profileImg}
-            onNameTap={() => nameTap(item.profileImg, item.name, item.id)}
+            onImgTap={() => onImageTap(item.profileImg, item.name)}
+            onNameTap={() => onNameTap(item.profileImg, item.name, item.id)}
           />
         )}
       />
-    </SafeAreaView>
+    </Container>
   );
 };
-
-export default Dashboard;

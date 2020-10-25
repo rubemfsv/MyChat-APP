@@ -1,16 +1,14 @@
 import React from 'react';
-import {View, Text, Image, Dimensions} from 'react-native';
+import {View, Text, Image} from 'react-native';
 import {Card, CardItem} from 'native-base';
+import {deviceWidth} from '../../utils/styleHelper/appStyle';
 import {uuid} from '../../utils/constants';
 import styles from './styles';
 import {color} from '../../utils';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 
-const ChatBox = ({userId, mssage, img, onImgTap}) => {
+const ChatBox = ({userId, msg, img, onImgTap}) => {
   let isCurrentUser = userId === uuid ? true : false;
-
-  const {height: deviceHeight, width: deviceWidth} = Dimensions.get('window');
-
   return (
     <Card
       transparent
@@ -39,7 +37,7 @@ const ChatBox = ({userId, mssage, img, onImgTap}) => {
           </CardItem>
         ) : (
           <Text style={[styles.chatTxt, isCurrentUser && {color: color.WHITE}]}>
-            {mssage}
+            {msg}
           </Text>
         )}
       </View>

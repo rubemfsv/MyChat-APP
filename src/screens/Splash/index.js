@@ -1,8 +1,9 @@
 import React, {useEffect} from 'react';
-import {View, Text} from 'react-native';
-import {color} from '../../utils';
 import {getAsyncStorage, keys} from '../../asyncStorage';
 import {setUniqueValue} from '../../utils/constants';
+import {Logo} from '../../components';
+
+import {Container} from './styles';
 
 export default ({navigation}) => {
   useEffect(() => {
@@ -13,35 +14,19 @@ export default ({navigation}) => {
             setUniqueValue(uuid);
             navigation.replace('Dashboard');
           } else {
-            navigation.replace('Login');
+            navigation.replace('SignIn');
           }
         })
         .catch((err) => {
           console.log(err);
-          navigation.replace('Login');
+          navigation.replace('SignIn');
         });
     }, 4000);
     return () => clearTimeout(redirect);
   }, [navigation]);
   return (
-    <View
-      style={[
-        {
-          backgroundColor: color.BLACK,
-          justifyContent: 'center',
-          alignItems: 'center',
-          flex: 1,
-        },
-      ]}>
-      <Text
-        style={{
-          color: color.WHITE,
-          fontSize: 50,
-          marginTop: 60,
-          fontWeight: 'bold',
-        }}>
-        My Chat
-      </Text>
-    </View>
+    <Container>
+      <Logo />
+    </Container>
   );
 };

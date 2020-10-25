@@ -1,11 +1,10 @@
 import React from 'react';
-import {TextInput, Text} from 'react-native';
-import styles from './styles';
 import {color} from '../../utils';
 
-export default ({
+import {TextInput} from './styles';
+
+const InputField = ({
   placeholder,
-  inputStyle,
   placeholderTextColor,
   secureTextEntry,
   onChangeText,
@@ -16,7 +15,6 @@ export default ({
   numberOfLines,
 }) => (
   <TextInput
-    style={[styles.input, inputStyle]}
     value={value}
     numberOfLines={numberOfLines}
     onChangeText={onChangeText}
@@ -31,3 +29,4 @@ export default ({
   />
 );
 
+export default InputField;

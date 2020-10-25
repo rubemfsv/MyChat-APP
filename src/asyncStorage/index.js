@@ -1,7 +1,4 @@
-import React from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
-
-// import { Container } from './styles';
 
 export const keys = {
   uuid: 'uuid',
@@ -36,5 +33,4 @@ const clearAsyncStorage = async () => {
     console.log(error);
   }
 };
-
 export {setAsyncStorage, getAsyncStorage, clearAsyncStorage};

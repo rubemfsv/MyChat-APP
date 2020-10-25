@@ -1,17 +1,21 @@
-import React, {useLayoutEffect, Fragment} from 'react';
-import {Image, Text, View, StyleSheet} from 'react-native';
-import {globalStyle, color} from '../../utils';
+import React, {useLayoutEffect} from 'react';
+import {Image, Text} from 'react-native';
+import {globalStyle} from '../../utils';
 
-export default ({route, navigation}) => {
+import {Container, ImageText} from './styles';
+
+const ShowFullImg = ({route, navigation}) => {
   const {params} = route;
   const {name, img, imgText} = params;
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: <Text>{name}</Text>,
     });
   }, [navigation, name]);
+
   return (
-    <Fragment>
+    <>
       {img ? (
         <Image
           source={{uri: img}}
@@ -19,18 +23,12 @@ export default ({route, navigation}) => {
           resizeMode="cover"
         />
       ) : (
-        <View
-          style={[
-            globalStyle.containerCentered,
-            {backgroundColor: color.BLACK},
-          ]}>
-          <Text style={styles.text}>{imgText}</Text>
-        </View>
+        <Container>
+          <ImageText>{imgText}</ImageText>
+        </Container>
       )}
-    </Fragment>
+    </>
   );
 };
 
-const styles = StyleSheet.create({
-  text: {color: color.WHITE, fontSize: 200, fontWeight: 'bold'},
-});
+export default ShowFullImg;

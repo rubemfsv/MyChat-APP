@@ -1,4 +1,4 @@
-export let uuid = '';
+export let uuid = "";
 export let keyboardVerticalOffset = -50;
 export const smallDeviceHeight = 650;
 

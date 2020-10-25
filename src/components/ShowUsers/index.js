@@ -1,29 +1,34 @@
 import React from 'react';
-import {Text, TouchableOpacity} from 'react-native';
-import {Card, CardItem, Left, Body, Thumbnail} from 'native-base';
-import styles from './styles';
+import {
+  CardList,
+  CardContent,
+  BodyContainer,
+  LeftContainer,
+  TouchableOpacity,
+  ThumbnailItem,
+  ThumbnailName,
+  ProfileName,
+} from './styles';
 
 const ShowUsers = ({name, img, onImgTap, onNameTap}) => {
   return (
-    <Card style={styles.cardStyle}>
-      <CardItem style={styles.cardItemStyle}>
-        <Left>
-          <TouchableOpacity style={[styles.logoContainer]} onPress={onImgTap}>
+    <CardList>
+      <CardContent>
+        <LeftContainer>
+          <TouchableOpacity onPress={onImgTap}>
             {img ? (
-              <Thumbnail source={{uri: img}} resizeMode="cover" />
+              <ThumbnailItem source={{uri: img}} resizeMode="cover" />
             ) : (
-              <Text style={styles.thumbnailName}>{name.charAt(0)}</Text>
+              <ThumbnailName>{name.charAt(0)}</ThumbnailName>
             )}
           </TouchableOpacity>
 
-          <Body>
-            <Text style={styles.profileName} onPress={onNameTap}>
-              {name}
-            </Text>
-          </Body>
-        </Left>
-      </CardItem>
-    </Card>
+          <BodyContainer>
+            <ProfileName onPress={onNameTap}>{name}</ProfileName>
+          </BodyContainer>
+        </LeftContainer>
+      </CardContent>
+    </CardList>
   );
 };
 

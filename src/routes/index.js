@@ -1,7 +1,7 @@
 import * as React from 'react';
-import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-import {SignIn, SignUp, Dashboard, Splash, Chat, ShowFullImg} from '../screens';
+import {NavigationContainer} from '@react-navigation/native';
+import {SignIn, SignUp, Dashboard, Splash, ShowFullImg, Chat} from '../screens';
 import {color} from '../utils';
 
 const Stack = createStackNavigator();
@@ -14,12 +14,12 @@ function NavContainer() {
         screenOptions={{
           headerShown: true,
           headerStyle: {backgroundColor: color.DARK_GRAY},
-          headerTintColor: color.WHITE,
-          headerTitleAlign: 'center',
           headerTitleStyle: {
             fontWeight: 'bold',
             fontSize: 20,
           },
+          headerTintColor: color.WHITE,
+          headerTitleAlign: 'center',
         }}>
         <Stack.Screen
           name="Splash"
@@ -39,7 +39,9 @@ function NavContainer() {
         <Stack.Screen
           name="Dashboard"
           component={Dashboard}
-          options={{headerLeft: null}}
+          options={{
+            headerLeft: null,
+          }}
         />
         <Stack.Screen
           name="ShowFullImg"
@@ -53,5 +55,4 @@ function NavContainer() {
     </NavigationContainer>
   );
 }
-
 export default NavContainer;

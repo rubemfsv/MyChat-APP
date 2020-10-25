@@ -1,101 +1,132 @@
 import React, {useCallback, useContext, useState} from 'react';
-import {SafeAreaView, View, Text, Alert} from 'react-native';
-import globalStyle from '../../utils/styleHelper/globalStyle';
-import {color} from '../../utils';
-import Input from '../../components/Input';
-import RoundCornerButton from '../../components/Buttons/RoundCornerButton';
-
-import SignInRequest from '../../network/signIn';
+import {Keyboard, TouchableWithoutFeedback, Platform} from 'react-native';
+('react-native-keyboard-aware-scroll-view');
+import {InputField, Button, Logo} from '../../components';
+import {Store} from '../../contexts/store';
+import {LOADING_START, LOADING_STOP} from '../../contexts/actions/type';
 import {setAsyncStorage, keys} from '../../asyncStorage';
-import {setUniqueValue} from '../../utils/constants';
+import {setUniqueValue, keyboardVerticalOffset} from '../../utils/constants';
+import {LoginRequest} from '../../network';
 
-const SignIn = ({navigation}) => {
-  const [credentials, setCredentials] = useState({
+import {
+  KeyboardAvoidingContainer,
+  Container,
+  LogoContainer,
+  FormContainer,
+  LinkText,
+} from './styles';
+
+export default ({navigation}) => {
+  const globalState = useContext(Store);
+  const {dispatchLoaderAction} = globalState;
+  const [credential, setCredential] = useState({
     email: '',
     password: '',
   });
-  const {email, password} = credentials;
+  const [logo, toggleLogo] = useState(true);
+  const {email, password} = credential;
+
+  const setInitialState = useCallback(() => {
+    setCredential({email: '', password: ''});
+  }, []);
 
   const handleOnChange = useCallback(
     (name, value) => {
-      setCredentials({
-        ...credentials,
+      setCredential({
+        ...credential,
         [name]: value,
       });
     },
-    [credentials],
+    [credential],
   );
 
   const onLoginPress = useCallback(() => {
+    Keyboard.dismiss();
     if (!email) {
-      Alert.alert('Email is required!');
+      alert('Email is required');
     } else if (!password) {
-      Alert.alert('Password is required!');
+      alert('Password is required');
     } else {
-      SignInRequest(email, password)
+      dispatchLoaderAction({
+        type: LOADING_START,
+      });
+      LoginRequest(email, password)
         .then((res) => {
           if (!res.additionalUserInfo) {
+            dispatchLoaderAction({
+              type: LOADING_STOP,
+            });
             alert(res);
             return;
           }
           setAsyncStorage(keys.uuid, res.user.uid);
           setUniqueValue(res.user.uid);
-
-          navigation.replace('Dashboard');
+          dispatchLoaderAction({
+            type: LOADING_STOP,
+          });
+          setInitialState();
+          navigation.navigate('Dashboard');
         })
         .catch((err) => {
+          dispatchLoaderAction({
+            type: LOADING_STOP,
+          });
           alert(err);
         });
     }
-  }, [email, password, navigation]);
+  }, [dispatchLoaderAction, email, navigation, setInitialState, password]);
+
+  const handleFocus = useCallback(() => {
+    setTimeout(() => {
+      toggleLogo(false);
+    }, 200);
+  }, []);
+
+  const handleBlur = useCallback(() => {
+    setTimeout(() => {
+      toggleLogo(true);
+    }, 200);
+  }, []);
 
   return (
-    <SafeAreaView style={[globalStyle.flex1, {backgroundColor: color.BLACK}]}>
-      <View style={[globalStyle.containerCentered]}>
-        <Text
-          style={{
-            color: color.WHITE,
-            fontSize: 50,
-            marginTop: 60,
-            fontWeight: 'bold',
-          }}>
-          My Chat
-        </Text>
-        <Text
-          style={{
-            color: color.WHITE,
-            fontSize: 35,
-            marginTop: 60,
-            fontWeight: 'bold',
-          }}>
-          Sign In
-        </Text>
-      </View>
-      <View style={[globalStyle.flex2, globalStyle.sectionCentered]}>
-        <Input
-          placeholder="Enter email"
-          value={email}
-          onChangeText={(text) => handleOnChange('email', text)}
-        />
-        <Input
-          placeholder="Enter password"
-          secureTextEntry={true}
-          value={password}
-          onChangeText={(text) => handleOnChange('password', text)}
-        />
-        <RoundCornerButton title="Sign In" onPress={() => onLoginPress()} />
-        <Text
-          style={{
-            fontSize: 20,
-            fontWeight: 'bold',
-            color: color.LIGHT_GREEN,
-          }}
-          onPress={() => navigation.navigate('SignUp')}>
-          Sign Up
-        </Text>
-      </View>
-    </SafeAreaView>
+    <KeyboardAvoidingContainer
+      keyboardVerticalOffset={keyboardVerticalOffset}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <Container>
+          {logo && (
+            <LogoContainer>
+              <Logo />
+            </LogoContainer>
+          )}
+          <FormContainer>
+            <InputField
+              placeholder="Enter email"
+              value={email}
+              onChangeText={(text) => handleOnChange('email', text)}
+              onFocus={() => handleFocus()}
+              onBlur={() => handleBlur()}
+            />
+            <InputField
+              placeholder="Enter password"
+              value={password}
+              secureTextEntry={true}
+              onChangeText={(text) => handleOnChange('password', text)}
+              onFocus={() => handleFocus()}
+              onBlur={() => handleBlur()}
+            />
+
+            <Button title="Login" onPress={() => onLoginPress()} />
+            <LinkText
+              onPress={() => {
+                setInitialState();
+                navigation.navigate('SignUp');
+              }}>
+              Sign Up
+            </LinkText>
+          </FormContainer>
+        </Container>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingContainer>
   );
 };
-
-export default SignIn;

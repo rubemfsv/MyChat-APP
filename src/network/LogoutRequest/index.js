@@ -1,6 +1,6 @@
 import firebase from '../../firebase/config';
 
-const LogOutUser = async () => {
+const LogoutRequest = async () => {
   try {
     return await firebase.auth().signOut();
   } catch (error) {
@@ -8,4 +8,4 @@ const LogOutUser = async () => {
   }
 };
 
-export default LogOutUser;
+export default LogoutRequest;

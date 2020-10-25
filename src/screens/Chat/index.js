@@ -1,25 +1,35 @@
-import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
+import React, {useLayoutEffect, useState, useEffect, useCallback} from 'react';
 import {
-  KeyboardAvoidingView,
-  Platform,
-  SafeAreaView,
   Text,
-  View,
+  FlatList,
+  TouchableWithoutFeedback,
+  Platform,
+  Keyboard,
 } from 'react-native';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import ImagePicker from 'react-native-image-picker';
-import {FlatList, TouchableWithoutFeedback} from 'react-native-gesture-handler';
-import {globalStyle, color} from '../../utils';
-import Input from '../../components/Input';
-import ChatBox from '../../components/ChatBox';
-import {senderMessage, receiverMessage} from '../../network';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+
 import firebase from '../../firebase/config';
-import styles from './styles';
+import {senderMsg, recieverMsg} from '../../network';
+
+import {InputField, ChatBox} from '../../components';
+
+import {deviceHeight} from '../../utils/styleHelper/appStyle';
+import {smallDeviceHeight} from '../../utils/constants';
+import {color, appStyle} from '../../utils';
+
+import {
+  Container,
+  KeyboardAvoiding,
+  MessageContainer,
+  InputContainer,
+  ButtonContainer,
+} from './styles';
 
 const Chat = ({route, navigation}) => {
   const {params} = route;
   const {name, img, imgText, guestUserId, currentUserId} = params;
-  const [messageValue, setMessageValue] = useState('');
+  const [msgValue, setMsgValue] = useState('');
   const [messages, setMessages] = useState([]);
 
   useLayoutEffect(() => {
@@ -35,12 +45,12 @@ const Chat = ({route, navigation}) => {
         .ref('messages')
         .child(currentUserId)
         .child(guestUserId)
-        .on('value', (dataSnapShot) => {
+        .on('value', (dataSnapshot) => {
           let msgs = [];
-          dataSnapShot.forEach((child) => {
+          dataSnapshot.forEach((child) => {
             msgs.push({
               sendBy: child.val().message.sender,
-              receivedBy: child.val().message.receiver,
+              recievedBy: child.val().message.reciever,
               msg: child.val().message.msg,
               img: child.val().message.img,
             });
@@ -50,13 +60,24 @@ const Chat = ({route, navigation}) => {
     } catch (error) {
       alert(error);
     }
-  }, [currentUserId, guestUserId]);
-
-  const handleOnChange = useCallback((text) => {
-    setMessageValue(text);
   }, []);
 
-  const handleCamera = useCallback(() => {
+  const handleSendMessageText = useCallback(() => {
+    setMsgValue('');
+    if (msgValue) {
+      senderMsg(msgValue, currentUserId, guestUserId, '')
+        .then(() => {})
+        .catch((err) => alert(err));
+
+      // * guest user
+
+      recieverMsg(msgValue, currentUserId, guestUserId, '')
+        .then(() => {})
+        .catch((err) => alert(err));
+    }
+  }, [msgValue, currentUserId, guestUserId]);
+
+  const handleSendImage = useCallback(() => {
     const option = {
       storageOptions: {
         skipBackup: true,
@@ -72,32 +93,24 @@ const Chat = ({route, navigation}) => {
         // Base 64
         let source = 'data:image/jpeg;base64,' + response.data;
 
-        senderMessage(messageValue, currentUserId, guestUserId, source)
+        senderMsg(msgValue, currentUserId, guestUserId, source)
           .then(() => {})
           .catch((err) => alert(err));
 
         // * guest user
-        receiverMessage(messageValue, currentUserId, guestUserId, '')
+
+        recieverMsg(msgValue, currentUserId, guestUserId, source)
           .then(() => {})
           .catch((err) => alert(err));
       }
     });
-  }, [messageValue, currentUserId, guestUserId]);
+  }, [msgValue, currentUserId, guestUserId]);
 
-  const handleSend = useCallback(() => {
-    if (messageValue) {
-      senderMessage(messageValue, currentUserId, guestUserId, '')
-        .then(() => {})
-        .catch((err) => alert(err));
+  const handleOnChange = useCallback((text) => {
+    setMsgValue(text);
+  }, []);
 
-      receiverMessage(messageValue, currentUserId, guestUserId, '')
-        .then(() => {})
-        .catch((err) => alert(err));
-    }
-    setMessageValue('');
-  }, [messageValue, currentUserId, guestUserId]);
-
-  const imgTap = useCallback(
+  const onImageTap = useCallback(
     (chatImg) => {
       navigation.navigate('ShowFullImg', {name, img: chatImg});
     },
@@ -105,50 +118,54 @@ const Chat = ({route, navigation}) => {
   );
 
   return (
-    <SafeAreaView style={[globalStyle.flex1, {backgroundColor: color.BLACK}]}>
-      {/* <KeyboardAvoidingView
-        keyboardVerticalOffset={85}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={[globalStyle.flex1, {backgroundColor: color.BLACK}]}>
-        <TouchableWithoutFeedback></TouchableWithoutFeedback>
-      </KeyboardAvoidingView> */}
-      <FlatList
-        inverted
-        data={messages}
-        keyExtractor={(_, index) => index.toString()}
-        renderItem={({item}) => (
-          <ChatBox
-            mssage={item.msg}
-            userId={item.sendBy}
-            img={item.img}
-            onImgTap={() => imgTap(item.img)}
-          />
-        )}
-      />
-      <View style={styles.sendMessageContainer}>
-        <Input
-          placeholder="Type Here"
-          numberOfLines={10}
-          inputStyle={styles.input}
-          value={messageValue}
-          onChangeText={(text) => handleOnChange(text)}
-        />
-        <View style={styles.sendBtnContainer}>
-          <MaterialCommunityIcons
-            name="camera"
-            color={color.WHITE}
-            size={45}
-            onPress={() => handleCamera()}
-          />
-          <MaterialCommunityIcons
-            name="send-circle"
-            color={color.WHITE}
-            size={45}
-            onPress={() => handleSend()}
-          />
-        </View>
-      </View>
-    </SafeAreaView>
+    <Container>
+      <KeyboardAvoiding
+        keyboardVerticalOffset={deviceHeight > smallDeviceHeight ? 100 : 70}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <>
+            <FlatList
+              inverted
+              data={messages}
+              keyExtractor={(_, index) => index.toString()}
+              renderItem={({item}) => (
+                <ChatBox
+                  msg={item.msg}
+                  userId={item.sendBy}
+                  img={item.img}
+                  onImgTap={() => onImageTap(item.img)}
+                />
+              )}
+            />
+
+            <MessageContainer>
+              <InputContainer>
+                <InputField
+                  placeholder="Type Here"
+                  numberOfLines={10}
+                  value={msgValue}
+                  onChangeText={(text) => handleOnChange(text)}
+                />
+              </InputContainer>
+              <ButtonContainer>
+                <MaterialCommunityIcons
+                  name="camera"
+                  color={color.WHITE}
+                  size={appStyle.fieldHeight - 5}
+                  onPress={() => handleSendImage()}
+                />
+                <MaterialCommunityIcons
+                  name="send-circle"
+                  color={color.WHITE}
+                  size={appStyle.fieldHeight - 5}
+                  onPress={() => handleSendMessageText()}
+                />
+              </ButtonContainer>
+            </MessageContainer>
+          </>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoiding>
+    </Container>
   );
 };
 

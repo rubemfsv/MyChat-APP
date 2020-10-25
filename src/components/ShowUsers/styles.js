@@ -1,26 +1,42 @@
-import {StyleSheet} from 'react-native';
+import styled from 'styled-components/native';
+import {Card, CardItem, Left, Body, Thumbnail} from 'native-base';
 import {color} from '../../utils';
 
-export default StyleSheet.create({
-  cardStyle: {
-    backgroundColor: color.SEMI_TRANSPARENT,
-    borderBottomWidth: 1,
-    borderColor: color.SILVER,
-  },
-  cardItemStyle: {
-    backgroundColor: color.SEMI_TRANSPARENT,
-  },
+export const CardList = styled(Card)`
+  background-color: ${color.SEMI_TRANSPARENT};
+  border-bottom-width: 1px;
+  border-color: ${color.SILVER};
+`;
 
-  logoContainer: {
-    height: 60,
-    width: 60,
-    borderColor: color.WHITE,
-    borderWidth: 2,
-    borderRadius: 30,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: color.DARK_GRAY,
-  },
-  thumbnailName: {fontSize: 30, color: color.WHITE, fontWeight: 'bold'},
-  profileName: {fontSize: 20, color: color.WHITE, fontWeight: 'bold'},
-});
+export const CardContent = styled(CardItem)`
+  background-color: ${color.SEMI_TRANSPARENT};
+`;
+
+export const TouchableOpacity = styled.TouchableOpacity`
+  height: 60px;
+  width: 60px;
+  border-color: ${color.WHITE};
+  border-width: 2px;
+  border-radius: 30px;
+  align-items: center;
+  justify-content: center;
+  background-color: ${color.DARK_GRAY};
+`;
+
+export const LeftContainer = styled(Left)``;
+
+export const BodyContainer = styled(Body)``;
+
+export const ThumbnailItem = styled(Thumbnail)``;
+
+export const ThumbnailName = styled.Text`
+  font-size: 30px;
+  color: ${color.WHITE};
+  font-weight: bold;
+`;
+
+export const ProfileName = styled.Text`
+  font-size: 20px;
+  color: ${color.WHITE};
+  font-weight: bold;
+`;

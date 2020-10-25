@@ -1,49 +1,57 @@
-import React, {useCallback, useContext, useState} from 'react';
-import {SafeAreaView, View, Text} from 'react-native';
-import globalStyle from '../../utils/styleHelper/globalStyle';
-import {color} from '../../utils';
-import Input from '../../components/Input';
-import RoundCornerButton from '../../components/Buttons/RoundCornerButton';
-
-import {setUniqueValue} from '../../utils/constants';
-import {setAsyncStorage, keys} from '../../asyncStorage';
-import SignUpRequest from '../../network/signUp';
-import {AddUser} from '../../network/user';
+import React, {useState, useContext, useCallback} from 'react';
+import {Keyboard, TouchableWithoutFeedback, Platform} from 'react-native';
 import firebase from '../../firebase/config';
+import {InputField, Button, Logo} from '../../components';
+import {Store} from '../../contexts/store';
+import {LOADING_START, LOADING_STOP} from '../../contexts/actions/type';
+import {setAsyncStorage, keys} from '../../asyncStorage';
+import {setUniqueValue, keyboardVerticalOffset} from '../../utils/constants';
+import {SignUpRequest, AddUser} from '../../network';
+
+import {
+  KeyboardAvoidingContainer,
+  Container,
+  LogoContainer,
+  FormContainer,
+  LinkText,
+} from './styles';
 
 const SignUp = ({navigation}) => {
-
-  const [credentials, setCredentials] = useState({
+  const globalState = useContext(Store);
+  const {dispatchLoaderAction} = globalState;
+  const [credential, setCredential] = useState({
     name: '',
     email: '',
     password: '',
     confirmPassword: '',
   });
-  const {name, email, password, confirmPassword} = credentials;
+  const [logo, toggleLogo] = useState(true);
+  const {email, password, confirmPassword, name} = credential;
 
-  const handleOnChange = useCallback(
-    (name, value) => {
-      setCredentials({
-        ...credentials,
-        [name]: value,
-      });
-    },
-    [credentials],
-  );
+  const setInitialState = useCallback(() => {
+    setCredential({email: '', password: '', confirmPassword: ''});
+  }, []);
 
-  const onLoginPress = useCallback(() => {
+  const onSignUpPress = useCallback(() => {
+    Keyboard.dismiss();
     if (!name) {
-      alert('Name is required!');
+      alert('Name is required');
     } else if (!email) {
-      alert('Email is required!');
+      alert('Email is required');
     } else if (!password) {
-      alert('Password is required!');
+      alert('Password is required');
     } else if (password !== confirmPassword) {
-      alert('Passwords do not match!');
+      alert('Password did not match');
     } else {
+      dispatchLoaderAction({
+        type: LOADING_START,
+      });
       SignUpRequest(email, password)
         .then((res) => {
           if (!res.additionalUserInfo) {
+            dispatchLoaderAction({
+              type: LOADING_STOP,
+            });
             alert(res);
             return;
           }
@@ -53,76 +61,112 @@ const SignUp = ({navigation}) => {
             .then(() => {
               setAsyncStorage(keys.uuid, uid);
               setUniqueValue(uid);
-
+              dispatchLoaderAction({
+                type: LOADING_STOP,
+              });
               navigation.replace('Dashboard');
             })
             .catch((err) => {
+              dispatchLoaderAction({
+                type: LOADING_STOP,
+              });
               alert(err);
             });
         })
         .catch((err) => {
+          dispatchLoaderAction({
+            type: LOADING_STOP,
+          });
           alert(err);
         });
     }
-  }, [name, email, password, confirmPassword, navigation]);
+  }, [
+    dispatchLoaderAction,
+    name,
+    email,
+    password,
+    confirmPassword,
+    navigation,
+  ]);
+
+  const handleOnChange = useCallback(
+    (name, value) => {
+      setCredential({
+        ...credential,
+        [name]: value,
+      });
+    },
+    [credential],
+  );
+
+  const handleFocus = useCallback(() => {
+    setTimeout(() => {
+      toggleLogo(false);
+    }, 200);
+  }, []);
+
+  const handleBlur = useCallback(() => {
+    setTimeout(() => {
+      toggleLogo(true);
+    }, 200);
+  }, []);
 
   return (
-    <SafeAreaView style={[globalStyle.flex1, {backgroundColor: color.BLACK}]}>
-      <View style={[globalStyle.containerCentered]}>
-        <Text
-          style={{
-            color: color.WHITE,
-            fontSize: 50,
-            marginTop: 60,
-            fontWeight: 'bold',
-          }}>
-          My Chat
-        </Text>
-        <Text
-          style={{
-            color: color.WHITE,
-            fontSize: 35,
-            marginTop: 40,
-            fontWeight: 'bold',
-          }}>
-          Sign Up
-        </Text>
-      </View>
-      <View style={[globalStyle.flex2, globalStyle.sectionCentered]}>
-        <Input
-          placeholder="Enter your name"
-          value={name}
-          onChangeText={(text) => handleOnChange('name', text)}
-        />
-        <Input
-          placeholder="Enter email"
-          value={email}
-          onChangeText={(text) => handleOnChange('email', text)}
-        />
-        <Input
-          placeholder="Enter password"
-          secureTextEntry={true}
-          value={password}
-          onChangeText={(text) => handleOnChange('password', text)}
-        />
-        <Input
-          placeholder="Confirm password"
-          secureTextEntry={true}
-          value={confirmPassword}
-          onChangeText={(text) => handleOnChange('confirmPassword', text)}
-        />
-        <RoundCornerButton title="Sign Up" onPress={() => onLoginPress()} />
-        <Text
-          style={{
-            fontSize: 20,
-            fontWeight: 'bold',
-            color: color.LIGHT_GREEN,
-          }}
-          onPress={() => navigation.navigate('SignIn')}>
-          Sign In
-        </Text>
-      </View>
-    </SafeAreaView>
+    <KeyboardAvoidingContainer
+      keyboardVerticalOffset={keyboardVerticalOffset}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <Container>
+          {logo && (
+            <LogoContainer>
+              <Logo />
+            </LogoContainer>
+          )}
+
+          <FormContainer>
+            <InputField
+              placeholder="Enter name"
+              value={name}
+              onChangeText={(text) => handleOnChange('name', text)}
+              onFocus={() => handleFocus()}
+              onBlur={() => handleBlur()}
+            />
+            <InputField
+              placeholder="Enter email"
+              value={email}
+              onChangeText={(text) => handleOnChange('email', text)}
+              onFocus={() => handleFocus()}
+              onBlur={() => handleBlur()}
+            />
+            <InputField
+              placeholder="Enter password"
+              secureTextEntry={true}
+              value={password}
+              onChangeText={(text) => handleOnChange('password', text)}
+              onFocus={() => handleFocus()}
+              onBlur={() => handleBlur()}
+            />
+            <InputField
+              placeholder="Confirm Password"
+              secureTextEntry={true}
+              value={confirmPassword}
+              onChangeText={(text) => handleOnChange('confirmPassword', text)}
+              onFocus={() => handleFocus()}
+              onBlur={() => handleBlur()}
+            />
+
+            <Button title="Sign Up" onPress={() => onSignUpPress()} />
+            <LinkText
+              onPress={() => {
+                setInitialState();
+                navigation.navigate('SignIn');
+              }}>
+              Sign In
+            </LinkText>
+          </FormContainer>
+        </Container>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingContainer>
   );
 };
 
