@@ -20,7 +20,7 @@ export const TouchableOpacity = styled.TouchableOpacity`
   border-radius: 30px;
   align-items: center;
   justify-content: center;
-  background-color: ${color.DARK_GRAY};
+  background-color: ${color.APP_SECOND_COLOR};
 `;
 
 export const LeftContainer = styled(Left)``;

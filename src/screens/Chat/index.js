@@ -60,7 +60,7 @@ const Chat = ({route, navigation}) => {
     } catch (error) {
       alert(error);
     }
-  }, []);
+  }, [currentUserId, guestUserId]);
 
   const handleSendMessageText = useCallback(() => {
     setMsgValue('');
@@ -68,8 +68,6 @@ const Chat = ({route, navigation}) => {
       senderMsg(msgValue, currentUserId, guestUserId, '')
         .then(() => {})
         .catch((err) => alert(err));
-
-      // * guest user
 
       recieverMsg(msgValue, currentUserId, guestUserId, '')
         .then(() => {})
@@ -96,8 +94,6 @@ const Chat = ({route, navigation}) => {
         senderMsg(msgValue, currentUserId, guestUserId, source)
           .then(() => {})
           .catch((err) => alert(err));
-
-        // * guest user
 
         recieverMsg(msgValue, currentUserId, guestUserId, source)
           .then(() => {})
@@ -151,13 +147,13 @@ const Chat = ({route, navigation}) => {
                 <MaterialCommunityIcons
                   name="camera"
                   color={color.WHITE}
-                  size={appStyle.fieldHeight - 5}
+                  size={appStyle.fieldHeight - 6}
                   onPress={() => handleSendImage()}
                 />
                 <MaterialCommunityIcons
                   name="send-circle"
                   color={color.WHITE}
-                  size={appStyle.fieldHeight - 5}
+                  size={appStyle.fieldHeight - 6}
                   onPress={() => handleSendMessageText()}
                 />
               </ButtonContainer>

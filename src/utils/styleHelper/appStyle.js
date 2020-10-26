@@ -25,9 +25,9 @@ const getFieldDimesions = () => {
     };
   }
 };
-export const fieldBgColor = color.DARK_GRAY;
+export const fieldBgColor = color.APP_SECOND_COLOR;
 export const fieldTextColor = color.WHITE;
-export const logoBgColor = color.DARK_GRAY;
+export const logoBgColor = color.APP_SECOND_COLOR;
 export const fieldHeight = getFieldDimesions().fieldHeight;
 export const fieldMarginVertical = getFieldDimesions().fieldMarginVertical;
 export const btnMarginVertical = getFieldDimesions().btnMarginVertical;

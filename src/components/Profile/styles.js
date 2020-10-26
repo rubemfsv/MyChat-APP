@@ -83,7 +83,7 @@ export const NoImage = styled.View`
   ${getDimensions('img')}
   justify-content: center;
   align-items: center;
-  background-color: ${color.DARK_GRAY};
+  background-color: ${color.APP_SECOND_COLOR};
 `;
 
 export const TextNoImage = styled.Text`

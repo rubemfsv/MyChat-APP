@@ -6,7 +6,7 @@ import {Store} from '../../contexts/store';
 import {LOADING_START, LOADING_STOP} from '../../contexts/actions/type';
 import {setAsyncStorage, keys} from '../../asyncStorage';
 import {setUniqueValue, keyboardVerticalOffset} from '../../utils/constants';
-import {LoginRequest} from '../../network';
+import {SignInRequest} from '../../network';
 
 import {
   KeyboardAvoidingContainer,
@@ -50,7 +50,7 @@ export default ({navigation}) => {
       dispatchLoaderAction({
         type: LOADING_START,
       });
-      LoginRequest(email, password)
+      SignInRequest(email, password)
         .then((res) => {
           if (!res.additionalUserInfo) {
             dispatchLoaderAction({

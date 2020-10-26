@@ -13,7 +13,7 @@ function NavContainer() {
         initialRouteName="Splash"
         screenOptions={{
           headerShown: true,
-          headerStyle: {backgroundColor: color.DARK_GRAY},
+          headerStyle: {backgroundColor: color.APP_MAIN_COLOR},
           headerTitleStyle: {
             fontWeight: 'bold',
             fontSize: 20,

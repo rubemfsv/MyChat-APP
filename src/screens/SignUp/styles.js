@@ -3,17 +3,18 @@ import {color} from '../../utils';
 
 export const KeyboardAvoidingContainer = styled.KeyboardAvoidingView`
   flex: 1;
-  background-color: ${color.BLACK};
+  background-color: ${color.APP_MAIN_COLOR};
 `;
 
 export const Container = styled.SafeAreaView`
   flex: 1;
-  background-color: ${color.BLACK};
+  background-color: ${color.APP_MAIN_COLOR};
 `;
 
 export const LogoContainer = styled.View`
   justify-content: center;
   align-items: center;
+  margin-top: 50px;
 `;
 
 export const FormContainer = styled.View`

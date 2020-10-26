@@ -1,6 +1,6 @@
 import styled from 'styled-components/native';
 
- import {color, appStyle} from '../../utils';
+import {color, appStyle} from '../../utils';
 import {smallDeviceHeight} from '../../utils/constants';
 
 const getDimensions = () => {
@@ -22,11 +22,10 @@ const getDimensions = () => {
 };
 
 export const Container = styled.View`
-  margin-top: 100px;
   height: ${getDimensions().height}px;
   width: ${getDimensions().width}px;
   border-radius: ${getDimensions().borderRadius}px;
-  background-color: ${color.DARK_GRAY};
+  background-color: ${color.APP_SECOND_COLOR};
   align-items: center;
   justify-content: center;
 `;

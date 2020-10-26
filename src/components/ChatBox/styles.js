@@ -1,10 +1,10 @@
 import {StyleSheet} from 'react-native';
-import {color, appStyle} from '../../utils';
+import {color} from '../../utils';
 
 export default StyleSheet.create({
-  chatContainer: {backgroundColor: color.WHITE, borderTopRightRadius: 20},
+  chatContainer: {backgroundColor: color.PRIMARY, borderTopRightRadius: 20},
   chatTxt: {
-    color: color.BLACK,
+    color: color.WHITE,
     fontSize: 18,
     marginVertical: 5,
     fontWeight: '500',
