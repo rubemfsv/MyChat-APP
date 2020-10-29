@@ -9,14 +9,14 @@ const getDimensions = () => {
       height: 150,
       width: 220,
       borderRadius: 50,
-      logoFontSize: 90,
+      logoFontSize: 40,
     };
   } else {
     return {
       height: 120,
       width: 120,
       borderRadius: 40,
-      logoFontSize: 70,
+      logoFontSize: 20,
     };
   }
 };

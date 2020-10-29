@@ -22,7 +22,6 @@ export const FormContainer = styled.View`
   flex: 2;
   justify-content: center;
   align-items: center;
-  margin-bottom: 100px;
 `;
 
 export const LinkText = styled.Text`

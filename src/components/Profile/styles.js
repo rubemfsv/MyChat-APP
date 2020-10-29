@@ -68,7 +68,7 @@ const getDimensions = (key) => {
 
 export const Container = styled.View`
   padding: 10px 10px;
-  align-self: center;
+  align-items: center;
 `;
 
 export const ImageContainer = styled.View`
